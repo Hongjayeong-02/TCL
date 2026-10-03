@@ -1,0 +1,4 @@
+Design : CMSDK_MCU
+Clock  : 125 MHz
+Period : 8 ns
+Status : PASS
