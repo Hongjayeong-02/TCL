@@ -41,6 +41,7 @@ For `csh` / `tcsh`:
 
 ```csh
 setenv UART_RTL_PATH <UART_V3_RTL_DIRECTORY>
+setenv SDC_PATH <SDC_FILE_PATH>
 setenv PDK_LIB_DIR <PDK_TIMING_LIBRARY_DIRECTORY>
 ```
 
@@ -168,41 +169,39 @@ Run:
 tclsh parse_timing_report.tcl <timing_report>
 ```
 
-Example:
+Example PASS:
 
 ```bash
 tclsh parse_timing_report.tcl timing_sample_pass.rpt
 ```
 
-The script:
+`timing_sample_pass.rpt` is a synthetic parser-test input, not a real synthesis result.
 
-1. reads the report,
-2. finds slack values using regular expressions,
-3. determines the worst slack,
-4. reports it as WNS,
-5. generates a PASS / FAIL result.
-
-Example PASS:
+Example PASS output:
 
 ```text
-SLACK : 0.42 ns
-SLACK : 0.18 ns
-SLACK : 0.31 ns
+SLACK : 0.420 ns  uart_apb_reg
+SLACK : 0.180 ns  uart_irq_reg
+SLACK : 0.310 ns  uart_core_reg
 
 WNS : 0.180 ns
-
 RESULT : PASS
 ```
 
 Example FAIL:
 
+```bash
+tclsh parse_timing_report.tcl timing_sample_fail.rpt
+```
+
+Example FAIL output:
+
 ```text
-SLACK : 0.21 ns
-SLACK : -0.08 ns
-SLACK : 0.05 ns
+SLACK : -0.120 ns  u_core/u_rx_fifo/mem_reg[7][3]/D
+SLACK : -0.035 ns  u_core/u_tx_fifo/rd_ptr_reg[2]/D
+SLACK :  0.040 ns  u_irq/irq_q_reg/D
 
-WNS : -0.080 ns
-
+WNS : -0.120 ns
 RESULT : FAIL
 ```
 
@@ -212,6 +211,8 @@ Criterion:
 WNS >= 0  → PASS
 WNS <  0  → FAIL
 ```
+
+The parser uses regular expressions to extract slack values and determines the worst slack automatically.
 
 ---
 
@@ -253,11 +254,13 @@ RESULT : FAIL
 
 The parser uses `regexp` to extract total cell area and compares it with an optional threshold.
 
+`area_sample_pass.rpt` is a synthetic parser-test input, not a real synthesis result.
+
 ---
 
 # 6. Tcl to EDA Automation
 
-This module demonstrates how Tcl language features become practical EDA automation components.
+The scripts in this directory connect Tcl language features to practical ASIC design automation tasks.
 
 ```text
 Tcl feature               EDA application
@@ -293,19 +296,19 @@ report_power
 write_hdl
 ```
 
-The distinction is important:
+The separation is:
 
 ```text
 Tcl
-    → controls and automates the flow
+ └─ configuration / automation / parsing
 
-Genus commands
-    → execute EDA-specific synthesis operations
+Cadence Genus
+ └─ synthesis / timing / reporting
 ```
 
 ---
 
-# 7. UART V3 Automation Flow
+# 7. UART V3 Automation Workflow
 
 The UART V3 example links the individual scripts into one workflow.
 
@@ -344,4 +347,6 @@ Through this module:
 - timing reports can be parsed automatically for WNS,
 - area reports can be checked against thresholds,
 - Tcl language features are connected to an actual Genus synthesis flow,
-- UART V3 RTL work is reused as a practical automation target.
+- UART V3 RTL work is reused as a practical automation target,
+- synthetic parser samples are clearly separated from real synthesis results,
+- real synthesis results are summarized separately in `RESULT.md`.
