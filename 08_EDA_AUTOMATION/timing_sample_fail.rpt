@@ -1,0 +1,14 @@
+Path 1
+Startpoint: uart_tx_reg
+Endpoint: uart_apb_reg
+slack (MET) 0.21
+
+Path 2
+Startpoint: uart_rx_reg
+Endpoint: uart_irq_reg
+slack (VIOLATED) -0.08
+
+Path 3
+Startpoint: uart_core_reg
+Endpoint: uart_apb_reg
+slack (MET) 0.05

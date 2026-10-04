@@ -76,3 +76,4 @@ genus.history
 # Lab generated demo files
 07_REGEXP/uart_apb_demo.v
 07_REGEXP/uart_apb_demo_bus.v
+08_EDA_AUTOMATION/filelist_syn.f
