@@ -29,7 +29,7 @@ This module connects basic Tcl syntax to an actual ASIC synthesis workflow using
 
 Run:
 
-```bash
+```bash id="xcp5k7"
 tclsh check_design_env.tcl
 ```
 
@@ -39,7 +39,7 @@ Environment-dependent paths should be passed through shell environment variables
 
 For `csh` / `tcsh`:
 
-```csh
+```csh id="k07ggp"
 setenv UART_RTL_PATH <UART_V3_RTL_DIRECTORY>
 setenv SDC_PATH <SDC_FILE_PATH>
 setenv PDK_LIB_DIR <PDK_TIMING_LIBRARY_DIRECTORY>
@@ -53,7 +53,7 @@ This keeps repository scripts portable across different servers and user account
 
 Run:
 
-```bash
+```bash id="23d5mb"
 tclsh uart_filelist_check.tcl
 ```
 
@@ -61,7 +61,7 @@ The script validates the synthesis source set for UART V3.
 
 Expected RTL sources:
 
-```text
+```text id="sm2n0m"
 uart_baud_gen.v
 uart_fifo.v
 uart_tx.v
@@ -75,7 +75,7 @@ uart_apb.v
 
 Example result:
 
-```text
+```text id="urw2pb"
 PASS : uart_baud_gen.v
 PASS : uart_fifo.v
 PASS : uart_tx.v
@@ -93,7 +93,7 @@ RESULT : PASS
 
 If all files exist, the script generates:
 
-```text
+```text id="mmv7ne"
 filelist_syn.f
 ```
 
@@ -107,13 +107,13 @@ The generated file contains only relative RTL filenames instead of personal abso
 
 Conceptual execution:
 
-```bash
+```bash id="h12sqs"
 genus -f uart_genus_flow.tcl
 ```
 
 The flow is:
 
-```text
+```text id="h1hb8q"
 environment variables
         ↓
 library setup
@@ -139,13 +139,13 @@ reports / netlist
 
 The top-level design is:
 
-```text
+```text id="tvhxki"
 uart_apb
 ```
 
 The example clock configuration is:
 
-```text
+```text id="h5ddk0"
 Clock port   : clk
 Clock period : 20.0 ns
 Frequency    : 50 MHz
@@ -153,7 +153,7 @@ Frequency    : 50 MHz
 
 The current synthesis example uses:
 
-```text
+```text id="8kk7bu"
 slow_vdd1v0_basicCells.lib
 ```
 
@@ -165,13 +165,13 @@ The actual library directory is supplied externally through `PDK_LIB_DIR`.
 
 Run:
 
-```bash
+```bash id="zflw90"
 tclsh parse_timing_report.tcl <timing_report>
 ```
 
 Example PASS:
 
-```bash
+```bash id="1lc875"
 tclsh parse_timing_report.tcl timing_sample_pass.rpt
 ```
 
@@ -179,10 +179,10 @@ tclsh parse_timing_report.tcl timing_sample_pass.rpt
 
 Example PASS output:
 
-```text
-SLACK : 0.420 ns  uart_apb_reg
-SLACK : 0.180 ns  uart_irq_reg
-SLACK : 0.310 ns  uart_core_reg
+```text id="83033l"
+SLACK : 0.420 ns
+SLACK : 0.180 ns
+SLACK : 0.310 ns
 
 WNS : 0.180 ns
 RESULT : PASS
@@ -190,13 +190,13 @@ RESULT : PASS
 
 Example FAIL:
 
-```bash
+```bash id="odw1ev"
 tclsh parse_timing_report.tcl timing_sample_fail.rpt
 ```
 
 Example FAIL output:
 
-```text
+```text id="iaaqn3"
 SLACK : -0.120 ns  u_core/u_rx_fifo/mem_reg[7][3]/D
 SLACK : -0.035 ns  u_core/u_tx_fifo/rd_ptr_reg[2]/D
 SLACK :  0.040 ns  u_irq/irq_q_reg/D
@@ -207,7 +207,7 @@ RESULT : FAIL
 
 Criterion:
 
-```text
+```text id="1bf09d"
 WNS >= 0  → PASS
 WNS <  0  → FAIL
 ```
@@ -220,25 +220,25 @@ The parser uses regular expressions to extract slack values and determines the w
 
 Run:
 
-```bash
+```bash id="2szsdl"
 tclsh parse_area_report.tcl <area_report>
 ```
 
 With an area limit:
 
-```bash
+```bash id="axjv15"
 tclsh parse_area_report.tcl <area_report> <area_limit>
 ```
 
 Example:
 
-```bash
+```bash id="jalfke"
 tclsh parse_area_report.tcl area_sample_pass.rpt 2000
 ```
 
 Example PASS:
 
-```text
+```text id="qd1gx4"
 TOTAL AREA : 1890.234
 AREA LIMIT : 2000.000
 RESULT : PASS
@@ -246,7 +246,7 @@ RESULT : PASS
 
 Example FAIL:
 
-```text
+```text id="bk38jo"
 TOTAL AREA : 1890.234
 AREA LIMIT : 1800.000
 RESULT : FAIL
@@ -262,7 +262,7 @@ The parser uses `regexp` to extract total cell area and compares it with an opti
 
 The scripts in this directory connect Tcl language features to practical ASIC design automation tasks.
 
-```text
+```text id="j8cn7v"
 Tcl feature               EDA application
 --------------------------------------------------
 set                       configuration variables
@@ -282,7 +282,7 @@ These Tcl commands prepare, validate, and process data.
 
 Genus commands perform synthesis operations:
 
-```text
+```text id="ap1d7g"
 read_libs
 read_hdl
 elaborate
@@ -298,7 +298,7 @@ write_hdl
 
 The separation is:
 
-```text
+```text id="pkrq5h"
 Tcl
  └─ configuration / automation / parsing
 
@@ -312,7 +312,7 @@ Cadence Genus
 
 The UART V3 example links the individual scripts into one workflow.
 
-```text
+```text id="e3dqkl"
 UART V3 Backend Freeze
         ↓
 RTL source definition
