@@ -60,6 +60,7 @@ puts "RTL_PATH : $RTL_PATH"
 
 set RTL_LIST {
     uart_baud_gen.v
+    uart_fifo.v
     uart_tx.v
     uart_tx_fifo.v
     uart_rx.v

@@ -4,13 +4,23 @@
 # Genus timing report parser
 #
 # 목적
-#   - timing report에서 slack / WNS 값 추출
-#   - 최악의 slack 계산
-#   - slack >= 0 : PASS
-#   - slack < 0  : FAIL
+#   - timing report 에서 path 별 slack 추출
+#   - WNS (worst negative slack) / TNS (total negative slack) 계산
+#   - WNS >= 0 : PASS,  WNS < 0 : FAIL
+#
+# 지원 형식 (위에서부터 우선 적용)
+#   1) Genus path header   : Path 1: MET (15234 ps) Setup Check with Pin ...
+#                            Path 2: VIOLATED (-120 ps) Setup Check ...
+#   2) Genus slack line    : Slack:=   15234           (단위 ps)
+#   3) 일반 형식           : slack (MET) 0.21          (단위 ns 로 가정)
+#
+#   Genus report 의 slack 단위는 ps → 출력은 ns 로 통일
 #
 # 실행
 #   tclsh parse_timing_report.tcl <timing_report>
+#
+# 종료 코드
+#   0 : PASS,  2 : timing violation,  1 : 사용법 / 파일 / 파싱 오류
 # ============================================================
 
 
@@ -36,10 +46,6 @@ if {$argc != 1} {
 set report_file [lindex $argv 0]
 
 
-# ------------------------------------------------------------
-# File check
-# ------------------------------------------------------------
-
 if {![file exists $report_file]} {
 
     puts ""
@@ -64,25 +70,78 @@ close $fp
 
 
 # ------------------------------------------------------------
-# Parse slack values
-#
-# 지원 예:
-#
-# slack          1.23
-# Slack:        -0.15
-# slack (MET)    0.42
-# slack (VIOLATED) -0.08
+# Parse
+#   paths : {{slack_ns endpoint} ...}
 # ------------------------------------------------------------
 
-set slack_values {}
+set paths  {}
+set format ""
+set lines  [split $report_data "\n"]
 
-foreach line [split $report_data "\n"] {
 
-    if {[regexp -nocase \
-        {slack(?:\s+\([^)]+\))?\s*[:=]?\s*(-?[0-9]+(?:\.[0-9]+)?)} \
-        $line -> slack]} {
+# ---- 1) Genus path header + Endpoint ----
 
-        lappend slack_values $slack
+set cur_slack ""
+set cur_ep    ""
+
+foreach line $lines {
+
+    if {[regexp {^\s*Path\s+\d+:\s+(?:MET|VIOLATED)\s+\(\s*(-?[0-9.]+)\s*ps\)} \
+            $line -> slack_ps]} {
+
+        if {$cur_slack ne ""} {
+            lappend paths [list $cur_slack $cur_ep]
+        }
+
+        set cur_slack [expr {$slack_ps / 1000.0}]
+        set cur_ep    ""
+
+    } elseif {$cur_slack ne "" && \
+              [regexp {^\s*Endpoint:\s+\([RF]\)\s+(\S+)} $line -> ep]} {
+
+        set cur_ep $ep
+    }
+}
+
+if {$cur_slack ne ""} {
+    lappend paths [list $cur_slack $cur_ep]
+    set format "Genus path header (ps)"
+}
+
+
+# ---- 2) Genus "Slack:=" line ----
+
+if {[llength $paths] == 0} {
+
+    foreach line $lines {
+
+        if {[regexp {Slack\s*:=\s*(-?[0-9.]+)} $line -> slack_ps]} {
+            lappend paths [list [expr {$slack_ps / 1000.0}] ""]
+        }
+    }
+
+    if {[llength $paths]} {
+        set format "Genus Slack:= (ps)"
+    }
+}
+
+
+# ---- 3) 일반 형식 : slack (MET) 0.21 / Slack: -0.15 ----
+
+if {[llength $paths] == 0} {
+
+    foreach line $lines {
+
+        if {[regexp -nocase \
+                {slack(?:\s+\([^)]+\))?\s*[:=]?\s*(-?[0-9]+(?:\.[0-9]+)?)} \
+                $line -> slack_ns]} {
+
+            lappend paths [list $slack_ns ""]
+        }
+    }
+
+    if {[llength $paths]} {
+        set format "generic slack (ns)"
     }
 }
 
@@ -95,30 +154,45 @@ puts ""
 puts {[1] SLACK SEARCH}
 puts "----------------------------------------"
 
-
-if {[llength $slack_values] == 0} {
+if {[llength $paths] == 0} {
 
     puts "FAIL : no slack value found"
 
     exit 1
 }
 
+puts "FORMAT : $format"
+puts "PATHS  : [llength $paths]"
+puts ""
 
-foreach value $slack_values {
-    puts "SLACK : $value ns"
+foreach p $paths {
+
+    lassign $p slack ep
+
+    puts [format "SLACK : %8.3f ns  %s" $slack $ep]
 }
 
 
 # ------------------------------------------------------------
-# Find worst slack
+# WNS / TNS
+#   lsort -real -index 0 : slack 오름차순 → 첫 번째가 worst
 # ------------------------------------------------------------
 
-set worst_slack [lindex $slack_values 0]
+set sorted [lsort -real -index 0 $paths]
 
-foreach value $slack_values {
+lassign [lindex $sorted 0] worst_slack worst_ep
 
-    if {$value < $worst_slack} {
-        set worst_slack $value
+set tns 0.0
+set violated 0
+
+foreach p $paths {
+
+    set s [lindex $p 0]
+
+    if {$s < 0} {
+
+        set tns [expr {$tns + $s}]
+        incr violated
     }
 }
 
@@ -127,7 +201,13 @@ puts ""
 puts {[2] WORST SLACK}
 puts "----------------------------------------"
 
-puts [format "WNS : %.3f ns" $worst_slack]
+puts [format "WNS      : %.3f ns" $worst_slack]
+puts [format "TNS      : %.3f ns" $tns]
+puts "VIOLATED : $violated / [llength $paths] paths"
+
+if {$worst_ep ne ""} {
+    puts "WORST EP : $worst_ep"
+}
 
 
 # ------------------------------------------------------------
@@ -137,7 +217,6 @@ puts [format "WNS : %.3f ns" $worst_slack]
 puts ""
 puts {[3] TIMING RESULT}
 puts "----------------------------------------"
-
 
 if {$worst_slack >= 0.0} {
 

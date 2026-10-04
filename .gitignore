@@ -77,3 +77,8 @@ genus.history
 07_REGEXP/uart_apb_demo.v
 07_REGEXP/uart_apb_demo_bus.v
 08_EDA_AUTOMATION/filelist_syn.f
+outputs/
+06_FILE_IO/out/
+reports/
+outputs/
+06_FILE_IO/out/
