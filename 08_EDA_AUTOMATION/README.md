@@ -62,6 +62,7 @@ Expected RTL sources:
 
 ```text
 uart_baud_gen.v
+uart_fifo.v
 uart_tx.v
 uart_tx_fifo.v
 uart_rx.v
@@ -75,6 +76,7 @@ Example result:
 
 ```text
 PASS : uart_baud_gen.v
+PASS : uart_fifo.v
 PASS : uart_tx.v
 PASS : uart_tx_fifo.v
 PASS : uart_rx.v
@@ -83,7 +85,7 @@ PASS : uart_core.v
 PASS : uart_irq.v
 PASS : uart_apb.v
 
-PASS : 8
+PASS : 9
 FAIL : 0
 RESULT : PASS
 ```
@@ -143,7 +145,7 @@ uart_apb
 The example clock configuration is:
 
 ```text
-Clock port   : i_pclk
+Clock port   : clk
 Clock period : 20.0 ns
 Frequency    : 50 MHz
 ```
@@ -230,14 +232,14 @@ tclsh parse_area_report.tcl <area_report> <area_limit>
 Example:
 
 ```bash
-tclsh parse_area_report.tcl area_sample_pass.rpt 1000
+tclsh parse_area_report.tcl area_sample_pass.rpt 2000
 ```
 
 Example PASS:
 
 ```text
-TOTAL AREA : 935.600
-AREA LIMIT : 1000.000
+TOTAL AREA : 1890.234
+AREA LIMIT : 2000.000
 RESULT : PASS
 ```
 

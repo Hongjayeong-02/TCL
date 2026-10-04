@@ -32,7 +32,7 @@ proc getenv_or_default {name default_value} {
 # Project Paths
 # ------------------------------------------------------------
 
-set RTL_PATH [getenv_or_default RTL_PATH "../RTL"]
+set UART_RTL_PATH [getenv_or_default UART_RTL_PATH "../RTL"]
 
 set SDC_PATH [getenv_or_default \
     SDC_PATH \
@@ -62,7 +62,7 @@ set LIB_LIST {
 puts ""
 puts "Configuration"
 
-puts "RTL_PATH    : $RTL_PATH"
+puts "UART_RTL_PATH    : $UART_RTL_PATH"
 puts "SDC_PATH    : $SDC_PATH"
 puts "PDK_LIB_DIR : $LIB_PATH"
 
@@ -82,7 +82,7 @@ set warn_count 0
 puts ""
 puts "\[1\] RTL PATH"
 
-if {[file isdirectory $RTL_PATH]} {
+if {[file isdirectory $UART_RTL_PATH]} {
 
     puts "PASS : RTL directory exists"
     incr pass_count
