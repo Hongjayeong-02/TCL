@@ -1,7 +1,6 @@
 # Tcl Scripting for EDA
 
-Cadence Tcl 8.6 기반의 Tcl scripting 실습과  
-**ASIC EDA flow automation** 적용을 정리한 repository입니다.
+Cadence Tcl 8.6 기반의 Tcl scripting 실습과 **ASIC EDA flow automation** 적용을 정리한 repository입니다.
 
 ## Contents
 
