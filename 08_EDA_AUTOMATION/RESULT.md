@@ -220,7 +220,7 @@ Cadence Genus를 이용하여 UART V3 top module `uart_apb`를 실제 synthesis�
 | Combinational Instance Count | 605 |
 | Total Area | 3360.150 |
 | Timing Result | PASS |
-| Area Result | PASS |
+| Area Result | PASS (limit 4000, example criterion) |
 
 ### QoR Result
 

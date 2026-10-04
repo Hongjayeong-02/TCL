@@ -14,6 +14,7 @@ Cadence Tcl 8.6 기반의 Tcl scripting 실습과 **ASIC EDA flow automation** �
 | `06_FILE_IO` | File read / write |
 | `07_REGEXP` | Regular expression, netlist parsing |
 | `08_EDA_AUTOMATION` | RTL / Library / Synthesis scripting |
+| `09_ADVANCED` | Advanced Tcl topics |
 
 ## EDA Application
 
@@ -34,4 +35,4 @@ Applied topics:
 
 ## Environment
 
-`Linux` · `Tcl` · `Git` · `Cadence Genus` · `Cadence Innovus`
+`Linux` · `Tcl` · `Git` · `Cadence Genus`

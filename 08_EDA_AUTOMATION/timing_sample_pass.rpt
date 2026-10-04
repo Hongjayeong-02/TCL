@@ -1,3 +1,5 @@
+# SYNTHETIC SAMPLE for parser test - not a real synthesis result
+
 Path 1
 Startpoint: uart_tx_reg
 Endpoint: uart_apb_reg
